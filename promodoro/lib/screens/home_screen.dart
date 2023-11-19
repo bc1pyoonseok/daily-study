@@ -9,10 +9,24 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String mock_time = "60:00";
   bool isRunning = false;
   int total_seconds = 10;
+  int total_success = 0;
   late Timer _timer;
+
+  String formatSeconds(int second) {
+    Duration duration = Duration(seconds: second);
+    return duration.toString().split('.').first.substring(2, 7);
+  }
+
+  void resetTimer() {
+    setState(() {
+      _timer.cancel();
+      total_seconds = 10;
+      isRunning = false;
+    });
+  }
+
   void resumeTimer() {
     setState(() {
       isRunning = !isRunning;
@@ -30,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _timer.cancel();
         total_seconds = 10;
         isRunning = false;
+        total_success++;
       } else {
         total_seconds = total_seconds - 1;
       }
@@ -57,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
             flex: 1,
             child: Container(
               alignment: Alignment.bottomCenter,
-              child: Text(total_seconds.toString(),
+              child: Text(formatSeconds(total_seconds),
                   style: TextStyle(
                     color: Theme.of(context).cardColor,
                     fontSize: 89,
@@ -67,24 +82,36 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Flexible(
             flex: 3,
-            child: Center(
-              child: isRunning
-                  ? IconButton(
-                      onPressed: resumeTimer,
-                      icon: Icon(
-                        Icons.pause_circle,
-                        color: Theme.of(context).cardColor,
-                      ),
-                      iconSize: 120,
-                    )
-                  : IconButton(
-                      onPressed: startTimer,
-                      iconSize: 120,
-                      icon: Icon(
-                        Icons.play_circle_outline,
-                        color: Theme.of(context).cardColor,
-                      ),
-                    ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
+                  child: isRunning
+                      ? IconButton(
+                          onPressed: resumeTimer,
+                          icon: Icon(
+                            Icons.pause_circle,
+                            color: Theme.of(context).cardColor,
+                          ),
+                          iconSize: 120,
+                        )
+                      : IconButton(
+                          onPressed: startTimer,
+                          iconSize: 120,
+                          icon: Icon(
+                            Icons.play_circle_outline,
+                            color: Theme.of(context).cardColor,
+                          ),
+                        ),
+                ),
+                IconButton(
+                    onPressed: resetTimer,
+                    iconSize: 120,
+                    icon: const Icon(
+                      Icons.restart_alt,
+                      color: Colors.white,
+                    )),
+              ],
             ),
           ),
           Flexible(
@@ -107,7 +134,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Text(
                           "Round",
                           style: TextStyle(
-                            color: Theme.of(context).colorScheme.background,
+                            color:
+                                Theme.of(context).textTheme.displayLarge!.color,
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
@@ -125,15 +153,21 @@ class _HomeScreenState extends State<HomeScreen> {
                             Text(
                               "Goal",
                               style: TextStyle(
-                                color: Theme.of(context).colorScheme.background,
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .displayLarge!
+                                    .color,
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             Text(
-                              "10",
+                              total_success.toString(),
                               style: TextStyle(
-                                color: Theme.of(context).colorScheme.background,
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .displayLarge!
+                                    .color,
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
